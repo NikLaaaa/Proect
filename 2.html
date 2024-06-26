@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Корзина</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <style>
+        #checkoutModal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            padding-top: 100px;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0,0.4);
+        }
+        #checkoutModal .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <ul id="cartItems"></ul>
+    <p>Загальна сума: ₴<span id="totalPrice">0.00</span></p>
+    <button id="showCheckoutModal">Оформити замовлення</button>
+
+    <div id="checkoutModal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Деталі доставки</h2>
+            <label for="autocompleteAddress">Місто:</label>
+            <input id="autocompleteAddress" type="text">
+            <label for="autocompleteWarehouse">Відділення:</label>
+            <input id="autocompleteWarehouse" type="text">
+            <label for="phone">Телефон:</label>
+            <input id="phone" type="text">
+            <label for="paymentMethod">Спосіб оплати:</label>
+            <select id="paymentMethod">
+                <option value="prepayment">Передоплата</option>
+                <option value="onDelivery">Оплата при отриманні</option>
+            </select>
+            <div id="prepayment-info" style="display: none;">
+                <p>Будь ласка, здійсніть передоплату на наш банківський рахунок.</p>
+            </div>
+            <button id="continueButton">Підтвердити замовлення</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var cartItemsElement = document.getElementById('cartItems');
+            var totalPriceElement = document.getElementById('totalPrice');
+            var checkoutModal = document.getElementById('checkoutModal');
+            var continueButton = document.getElementById('continueButton');
+            var prepaymentInfo = document.getElementById('prepayment-info');
+            var addressInput = document.getElementById('autocompleteAddress');
+            var warehouseInput = document.getElementById('autocompleteWarehouse');
+            var phoneInput = document.getElementById('phone');
+            var paymentMethodSelect = document.getElementById('paymentMethod');
+
+            // Функція для відображення товарів у кошику
+            function displayCart() {
+                var cart = JSON.parse(localStorage.getItem('cart')) || [];
+                var totalPrice = 0;
+                cartItemsElement.innerHTML = ''; // Очищення списку перед відображенням
+
+                cart.forEach(function(item, index) {
+                    var li = document.createElement('li');
+                    li.textContent = item.name + ' - ₴' + item.price;
+
+                    var deleteButton = document.createElement('button');
+                    deleteButton.textContent = 'Видалити';
+                    deleteButton.setAttribute('data-index', index);
+                    deleteButton.addEventListener('click', function() {
+                        removeFromCart(index);
+                    });
+
+                    li.appendChild(deleteButton);
+                    cartItemsElement.appendChild(li);
+                    totalPrice += item.price;
+                });
+
+                // Відображення загальної вартості
+                totalPriceElement.textContent = totalPrice.toFixed(2);
+            }
+
+            // Функція для видалення товару з кошика
+            function removeFromCart(index) {
+                var cart = JSON.parse(localStorage.getItem('cart')) || [];
+                cart.splice(index, 1); // Видаляємо елемент з масиву
+                localStorage.setItem('cart', JSON.stringify(cart)); // Оновлюємо кошик у localStorage
+                displayCart(); // Повторно відображаємо кошик
+            }
+
+            // Ініціалізація відображення кошика при завантаженні сторінки
+            displayCart();
+
+            continueButton.addEventListener('click', function() {
+                var address = addressInput.value.trim();
+                var warehouse = warehouseInput.value.trim();
+                var phone = phoneInput.value.trim();
+                var paymentMethod = paymentMethodSelect.value;
+
+                if (address === '' || phone === '' || paymentMethod === '') {
+                    alert('Будь ласка, заповніть усі поля для оформлення замовлення.');
+                    return;
+                }
+
+                $.ajax({
+                    url: 'process_order.php',
+                    method: 'POST',
+                    data: {
+                        address: address,
+                        warehouse: warehouse,
+                        phone: phone,
+                        paymentMethod: paymentMethod
+                    },
+                    success: function(response) {
+                        console.log('Заказ успішно оформлен');
+                        alert('Заказ успішно оформлен. Ми зв\'яжемось з вами для підтвердження замовлення.');
+                    },
+                    error: function(error) {
+                        console.error('Виникла помилка при оформленні замовлення', error);
+                        alert('Виникла помилка при оформленні замовлення. Будь ласка, спробуйте ще раз або зв\'яжіться з нами напряму.');
+                    }
+                });
+
+                localStorage.removeItem('cart');
+                cartItemsElement.innerHTML = '';
+                totalPriceElement.textContent = '0.00';
+            });
+
+            paymentMethodSelect.addEventListener('change', function() {
+                if (paymentMethodSelect.value === 'onDelivery') {
+                    prepaymentInfo.style.display = 'block';
+                } else {
+                    prepaymentInfo.style.display = 'none';
+                }
+            });
+
+            document.getElementById('showCheckoutModal').addEventListener('click', function() {
+                checkoutModal.style.display = 'block';
+            });
+
+            document.getElementsByClassName('close')[0].addEventListener('click', function() {
+                checkoutModal.style.display = 'none';
+            });
+
+            window.addEventListener('click', function(event) {
+                if (event.target == checkoutModal) {
+                    checkoutModal.style.display = 'none';
+                }
+            });
+        });
+
+        $(document).ready(function() {
+            var citiesData;
+            var warehousesData;
+
+            $.ajax({
+                url: "https://api.novaposhta.ua/v2.0/json/",
+                type: "POST",
+                contentType: "application/json",
+                dataType: "json",
+                data: JSON.stringify({
+                    "apiKey": "030f1ad47639c0efc1b86643d624b74b",
+                    "modelName": "Address",
+                    "calledMethod": "getCities",
+                    "methodProperties": {}
+                }),
+                success: function(data) {
+                    if (data.success && data.data.length > 0) {
+                        citiesData = data.data;
+
+                        $("#autocompleteAddress").autocomplete({
+                            source: function(request, response) {
+                                var filteredCities = citiesData.filter(function(city) {
+                                    return city.Description.toLowerCase().includes(request.term.toLowerCase());
+                                });
+                                var limitedCities = filteredCities.slice(0, 10).map(function(city) {
+                                    return city.Description;
+                                });
+                                response(limitedCities);
+                            },
+                            minLength: 1
+                        });
+                    }
+                }
+            });
+
+            function loadWarehouses(cityRef) {
+                $.ajax({
+                    url: "https://api.novaposhta.ua/v2.0/json/",
+                    type: "POST",
+                    contentType: "application/json",
+                    dataType: "json",
+                    data: JSON.stringify({
+                        "apiKey": "030f1ad47639c0efc1b86643d624b74b",
+                        "modelName": "AddressGeneral",
+                        "calledMethod": "getWarehouses",
+                        "methodProperties": {
+                            "CityRef": cityRef
+                        }
+                    }),
+                    success: function(data) {
+                        if (data.success && data.data.length > 0) {
+                            warehousesData = data.data;
+
+                            $("#autocompleteWarehouse").autocomplete({
+                                source: function(request, response) {
+                                    var filteredWarehouses = warehousesData.filter(function(warehouse) {
+                                        return warehouse.Description.toLowerCase().includes(request.term.toLowerCase());
+                                    });
+                                    var limitedWarehouses = filteredWarehouses.slice(0, 10).map(function(warehouse) {
+                                        return warehouse.Description;
+                                    });
+                                    response(limitedWarehouses);
+                                },
+                                minLength: 1
+                            });
+                        }
+                    }
+                });
+            }
+
+            $("#autocompleteAddress").on("autocompleteselect", function(event, ui) {
+                var selectedCity = ui.item.value;
+                var cityRef = citiesData.find(function(city) {
+                    return city.Description === selectedCity;
+                }).Ref;
+                loadWarehouses(cityRef);
+            });
+        });
+    </script>
+</body>
+</html>

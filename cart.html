@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Корзина</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="2.css">
+    <script src="script2.js" defer></script>
+</head>
+<body>
+    <div id="cartContainer">
+        <h2>Корзина</h2>
+        <ul id="cartItems"></ul>
+        <p id="totalPrice">Загальна сума: ₴0.00</p>
+    </div>
+
+    <button id="showCheckoutModal">Оформити замовлення</button>
+
+    <div id="checkoutModal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Деталі доставки</h2>
+            <label for="autocompleteAddress">Місто:</label>
+            <input id="autocompleteAddress" type="text">
+            <label for="autocompleteWarehouse">Відділення:</label>
+            <input id="autocompleteWarehouse" type="text">
+            <label for="phone">Телефон:</label>
+            <input id="phone" type="text">
+            <label for="paymentMethod">Спосіб оплати:</label>
+            <select id="paymentMethod">
+                <option value="prepayment">Оплата при отриманні</option>
+                <option value="onDelivery">Передоплата</option>
+            </select>
+            <div id="prepayment-info" style="display: none;">
+                <p>Будь ласка, здійсніть передоплату на наш банківський рахунок.</p>
+            </div>
+            <button id="continueButton">Підтвердити замовлення</button>
+        </div>
+    </div>
+</body>
+</html>

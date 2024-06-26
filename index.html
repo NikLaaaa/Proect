@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <title>NikLaStore</title>
+  <link rel="stylesheet" href="1.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <header>
+    <div class="transition-overlay"></div>
+    <div class="header_left">
+      <h1>NikLaStore</h1>
+      <div class="bio"></div>
+    </div>
+    <div class="header_right">
+      <div class="header_btn"></div>
+    </div>
+  </header>
+
+  <div class="cart">
+    <img src="shop.png" alt="Кошик">
+    <div class="totaltext-container">
+    <p class="totaltext">Всього: ₴<span id="totalPrice">0</span></p>
+    <p class = totaltext1>
+          <a href="cart.html">Подивитися кошик</a>
+    </p>
+      </div>
+    <ul id="cartItems">
+    </ul>
+  </div>
+
+  <div class="catalog">
+    <div class="product">
+      <img src="product1.jpg" alt="Сумка Patagonia з нашивкою">
+      <h2>Сумка Patagonia</h2>
+      <div class="card2">
+        </div>
+      <div class="price">
+        <p>450₴</p>
+      </div>
+      <button class="Koshik" data-price="450" onclick="addToCart('Сумка Patagonia', 450)">Додати у кошик</button>
+    </div>
+
+    <div class="product">
+      <img src="product2.jpg" alt="Барсетка Arc'teryx">
+      <h2>Месенджер Arc'teryx</h2>
+      <div class="card2">
+      </div>
+      <div class="price">
+        <p>400₴</p>
+      </div>
+      <button class="Koshik" data-price="400" onclick="addToCart('Месенджер Arc\'teryx', 400)">Додати у кошик</button>
+    </div>
+
+    <div class="product">
+      <img src="product3.jpg" alt="Nike">
+      <h2>Nike Sb dunk black</h2>
+      <div class="price">
+        <p>2400₴</p>
+      </div>
+      <button class="Koshik" data-price="2400" onclick="addToCart('Nike Sb dunk black', 2400)">Додати у кошик</button>
+    </div>
+
+    <div class="product">
+      <img src="product4.jpg" alt="Nike sb dunk mummy">
+      <h2>Nike sb dunk mummy</h2>
+      <div class="price">
+        <p>2900₴</p>
+      </div>
+      <button class="Koshik" data-price="2900" onclick="addToCart('Nike sb dunk mummy', 2900)">Додати у кошик</button>
+    </div>
+
+    <div class="product">
+      <img src="product5.jpg" alt="Nike sb dunk parra">
+      <h2>Nike sb dunk parra</h2>
+      <div class="price">
+        <p>2500₴</p>
+      </div>
+      <button class="Koshik" data-price="2500" onclick="addToCart('Nike sb dunk parra', 2500)">Додати у кошик</button>
+    </div>
+
+    <div class="product">
+      <img src="product6.jpg" alt="Nike sb dunk low pro white gum">
+      <h2>Nike sb dunk low pro white gum</h2>
+      <div class="price">
+        <p>2650₴</p>
+      </div>
+      <button class="Koshik" data-price="2650" onclick="addToCart('Nike sb dunk low pro white gum', 2650)">Додати у кошик</button>
+    </div>
+  </div>
+
+  <footer id="footer">
+    <div>
+      <p>&copy; 2024 Всі права захищені</p>
+      <h2 class="tg">телеграм @NikLaStore</h2>
+    </div>
+  </footer>
+</body>
+</html>
